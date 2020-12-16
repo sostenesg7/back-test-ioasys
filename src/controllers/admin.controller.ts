@@ -1,7 +1,8 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { Admin } from '../models/admin.model';
 import { AdminDoc } from '../types/admin.types';
-
+import { Types } from 'mongoose';
+const ObjectId = Types.ObjectId;
 interface CustomRequest<T> extends Request {
   body: T;
 }
@@ -14,6 +15,7 @@ interface CustomRequest<T> extends Request {
  * @return {*}  {Promise<Response>}
  */
 const find = async (req: Request, res: Response): Promise<Response> => {
+  //FIXME: remover find, pois não é necessário
   try {
     const admin: AdminDoc | null = await Admin.findOne({});
 
@@ -37,8 +39,8 @@ const find = async (req: Request, res: Response): Promise<Response> => {
 const save = async (
   req: CustomRequest<AdminDoc>,
   res: Response,
-  next: any
-): Promise<Response> => {
+  next: NextFunction
+): Promise<Response | undefined> => {
   try {
     //TODO: Criar password
 
@@ -49,9 +51,8 @@ const save = async (
 
     return res.status(200).json(admin);
   } catch (error) {
-    error.status = 422;
-    return next(error);
-    //return res.status(500).json(error.message);
+    // error.status = 422;
+    next(error);
   }
 };
 
@@ -64,8 +65,9 @@ const save = async (
  */
 const update = async (
   req: CustomRequest<AdminDoc>,
-  res: Response
-): Promise<Response> => {
+  res: Response,
+  next: NextFunction
+): Promise<Response | undefined> => {
   try {
     //TODO: Criar password
 
@@ -73,8 +75,43 @@ const update = async (
 
     return res.status(200).json(admin);
   } catch (error) {
-    return res.status(500).json(error.message);
+    error.status = 422;
+    next(error);
   }
 };
 
-export { find, save, update };
+/**
+ *
+ *
+ * @param {Request} req
+ * @param {Response} res
+ * @return {*}  {Promise<Response>}
+ */
+const remove = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response | undefined> => {
+  try {
+    const id = ObjectId(req.params.id);
+    const admin: AdminDoc | null = await Admin.findOneAndUpdate(
+      {
+        _id: id,
+        inactive: { $ne: true },
+      },
+      {
+        inactive: true,
+      }
+    );
+
+    if (!admin) {
+      return res.status(422).json('Administrador não encontrado.');
+    }
+
+    return res.status(200).json('Administrador removido.');
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { find, save, update, remove };

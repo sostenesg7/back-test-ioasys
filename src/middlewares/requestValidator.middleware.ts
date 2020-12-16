@@ -12,7 +12,6 @@ const validate = (validations: ValidationChain[]) => {
 
     res.status(400).json({
       errors: errors
-        //.formatWith((error) => ({ message: error.msg, field: error.param }))
         .formatWith((error) => error.msg)
         .mapped(),
     });

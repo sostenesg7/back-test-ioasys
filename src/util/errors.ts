@@ -16,3 +16,4 @@ export const admin = {
 };
 
 export const emailAlreadyRegistered = 'O email informado já existe.';
+export const invalidId = 'O id informado não é válido.';
