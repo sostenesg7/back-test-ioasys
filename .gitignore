@@ -106,4 +106,4 @@ mongodb
 #build folders
 build
 
-*.d.ts
+# *.d.ts

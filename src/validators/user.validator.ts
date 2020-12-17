@@ -2,10 +2,11 @@ import { body, Meta, param } from 'express-validator';
 import { validate } from '../middlewares/requestValidator.middleware';
 import { errors } from '../util';
 import { Types } from 'mongoose';
+import { filterUpdate, checkPassword } from '../util/helpers';
 
-const messages = errors.admin.register;
+const messages = errors.user.register;
 
-export const adminSignUpValidator = validate([
+export const userSignUpValidator = validate([
   body('name', messages.name)
     .notEmpty()
     .isString()
@@ -28,10 +29,32 @@ export const adminSignUpValidator = validate([
     .withMessage(messages.passwordConfirmationMatch),
 ]);
 
-export const adminRemoveValidator = validate([
+export const userRemoveValidator = validate([
   param('id', errors.invalidId)
     .notEmpty()
     .custom((value: string, { req }) => Types.ObjectId.isValid(value))
     .bail()
     .customSanitizer((value: string, meta: Meta) => Types.ObjectId(value)),
+]);
+
+export const userUpdateValidator = validate([
+  body().customSanitizer((body) => filterUpdate(body)),
+  body('name', messages.name)
+    .optional()
+    .notEmpty()
+    .isString()
+    .trim()
+    .escape()
+    .isLength({ min: 1, max: 100 })
+    .withMessage((value: any, meta: Meta) => messages.nameLength),
+  body('email', messages.email).optional().isEmail().normalizeEmail(),
+  body('password', messages.password)
+    .optional()
+    .notEmpty()
+    .isString()
+    .isLength({ min: 6, max: 16 })
+    .withMessage((value: any, meta: Meta) => messages.passwordLength),
+  body('passwordConfirmation', messages.passwordConfirmation)
+    .custom(checkPassword)
+    .withMessage(messages.passwordConfirmationMatch),
 ]);

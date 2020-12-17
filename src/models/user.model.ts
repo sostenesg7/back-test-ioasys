@@ -1,18 +1,19 @@
 import mongoose, { Schema } from 'mongoose';
-import { AdminDoc } from '../types/admin.types';
+import { UserDoc } from '../types/user.types';
+import { UserRoles } from '../types/common.types';
 
-const AdminSchema = new Schema(
+const UserSchema = new Schema(
   {
     name: {
       type: String,
-      description: 'Nome do administrador.',
+      description: 'Nome do usuário.',
       min: 1,
       max: 100,
       required: true,
     },
     email: {
       type: String,
-      description: 'Email do administrador.',
+      description: 'Email do usuário.',
       min: 1,
       max: 100,
       required: true,
@@ -21,7 +22,7 @@ const AdminSchema = new Schema(
     },
     password: {
       type: String,
-      description: 'Senha do administrador.',
+      description: 'Senha do usuário.',
       min: 6,
       max: 16,
       required: true,
@@ -31,11 +32,18 @@ const AdminSchema = new Schema(
       description: 'Status de atividade do usuário.',
       default: false,
     },
+    role: {
+      type: String,
+      enum: Object.values(UserRoles),
+      description: 'Papel usuário no sistema (admin/usuário padrão).',
+      default: UserRoles.USER,
+      required: true,
+    },
   },
   {
     timestamps: true,
     toJSON: {
-      transform(doc: AdminDoc, ret: AdminDoc) {
+      transform(doc: UserDoc, ret: UserDoc) {
         ret.id = ret._id;
         delete ret._id;
         delete ret.__v;
@@ -44,8 +52,8 @@ const AdminSchema = new Schema(
   }
 );
 
-const Admin = mongoose.model<AdminDoc>('Admin', AdminSchema);
+const User = mongoose.model<UserDoc>('User', UserSchema);
 
-Admin.createCollection({});
+User.createCollection({});
 
-export { Admin };
+export { User };

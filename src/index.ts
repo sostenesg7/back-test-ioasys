@@ -12,6 +12,7 @@ let certificate;
 let ca;
 
 try {
+  // TODO: Criar certificados para uso com https
   privateKey = readFileSync('privkey.pem', 'utf8');
   certificate = readFileSync('cert.pem', 'utf8');
 
@@ -28,7 +29,7 @@ const credentials = {
 
 const start = async () => {
   if (!process.env.MONGO_URI) {
-    throw new Error('MONGO_URI must be defined');
+    throw new Error('MONGO_URI must be defined. Observação: A url de conexão do banco foi enviada com o email do reposiório.');
   }
 
   if (!process.env.LOGGER_LEVEL) {
