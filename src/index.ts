@@ -5,7 +5,7 @@ import https = require('https');
 import { logger } from './util/logger';
 import { app } from './app';
 
-app.locals.readiness = false;
+app.locals.appName = 'ioasys-test';
 
 let privateKey;
 let certificate;
