@@ -5,7 +5,7 @@ import https = require('https');
 import { logger } from './util/logger';
 import { app } from './app';
 
-app.locals.appName = 'ioasys-test';
+app.locals.ready = false;
 
 let privateKey;
 let certificate;
@@ -50,7 +50,7 @@ const start = async () => {
     logger.info('Database connection successfull.');
 
     app.locals.logger = logger;
-    app.locals.readiness = true;
+    app.locals.ready = true;
   } catch (err) {
     logger.log('error', err);
     throw err;
